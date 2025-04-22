@@ -81,12 +81,8 @@
       const selectedUrl = fileSelect.value;
 
       if (selectedUrl) {
-        const link = document.createElement("a");
-        link.href = selectedUrl;
-        link.download = selectedUrl.split('/').pop();
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        // Open the file in a new tab instead of forcing a download
+        window.open(selectedUrl, "_blank");
       } else {
         alert("Please select a file first.");
       }
