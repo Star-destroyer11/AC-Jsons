@@ -45,16 +45,15 @@
           if (item.type === "file") {
             const li = document.createElement("li");
             const a = document.createElement("a");
-            a.href = item.download_url;
+            a.href = `https://github.com/${user}/${repo}/blob/${branch}/${item.path}`;
             a.textContent = item.name;
-            a.download = item.name; // Forces download when clicked
             li.appendChild(a);
             fileList.appendChild(li);
           } else if (item.type === "dir") {
-            // If it's a folder, link to it
+            // If it's a folder, link to it using GitHub's blob URL format
             const li = document.createElement("li");
             const a = document.createElement("a");
-            a.href = `/${repo}/blob/main/${item.path}/`;  // Link to folder path
+            a.href = `https://github.com/${user}/${repo}/blob/${branch}/${item.path}/`;  // Folder link
             a.textContent = `${item.name}/`; // Folder name
             li.appendChild(a);
             fileList.appendChild(li);
