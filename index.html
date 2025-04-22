@@ -2,93 +2,48 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AC-JSONS/title>
-  <style>
-    body { font-family: sans-serif; padding: 20px; background: #f9f9f9; }
-    h1 { color: #333; }
-    ul { list-style: none; padding-left: 20px; }
-    li { margin-bottom: 10px; }
-    a { color: #007bff; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    .folder { font-weight: bold; }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AC-Jsons</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>📁 Jsons </h1>
-  <ul id="file-list">Loading folder contents...</ul>
+  <div class="container">
+    <h1>📁 AC-Jsons</h1>
+    <ul id="file-explorer">Loading files...</ul>
+  </div>
 
   <script>
-    const user = "star-destroyer11";
-    const repo = "AC-JSONS";
-    const branch = "main";
-    const folderPath = "Jsons";  // Path to the Jsons folder in the repo
+    const explorer = document.getElementById("file-explorer");
 
-    // Function to handle file download
-    function downloadFile(fileUrl, filename) {
-      fetch(fileUrl)
-        .then(response => response.blob()) // Convert the file to Blob
-        .then(blob => {
-          const url = window.URL.createObjectURL(blob); // Create an Object URL for the Blob
-          const a = document.createElement("a");
-          a.href = url;
-          a.download = filename;  // Set the filename to be downloaded
-          a.click();  // Trigger the download
-          window.URL.revokeObjectURL(url);  // Clean up the Object URL
-        })
-        .catch(err => {
-          alert("Failed to download the file. Please try again later.");
-          console.error(err);
-        });
-    }
-
-    // Fetch the contents of the folder (Jsons folder)
-    function fetchFolderContents(path) {
-      fetch(`https://api.github.com/repos/${user}/${repo}/contents/${path}?ref=${branch}`)
+    function loadFiles() {
+      fetch("https://api.github.com/repos/star-destroyer11/AC-JSONS/contents/Jsons")
         .then(res => res.json())
-        .then(data => {
-          const fileList = document.getElementById("file-list");
-          fileList.innerHTML = "";  // Clear loading text
-
-          // Loop through the files/folders in the folder
-          data.forEach(item => {
-            const li = document.createElement("li");
-
-            if (item.type === "file") {
-              // For files, create a download link
-              const a = document.createElement("a");
-              const rawFileUrl = `https://raw.githubusercontent.com/${user}/${repo}/${branch}/${item.path}`;
-              a.href = rawFileUrl;
-              a.textContent = item.name;
-              a.onclick = function(event) {
-                event.preventDefault(); // Prevent the default navigation
-                downloadFile(rawFileUrl, item.name); // Trigger the download
-              };
-              li.appendChild(a);
-            } else if (item.type === "dir") {
-              // For directories, create a link to browse the folder
-              const a = document.createElement("a");
-              a.href = `#${item.path}`;  // Link to the folder path
-              a.textContent = `${item.name}/`;
-              a.classList.add("folder");
-              a.onclick = function(event) {
-                event.preventDefault();
-                fetchFolderContents(item.path);  // Load folder contents when clicked
-              };
-              li.appendChild(a);
+        .then(files => {
+          explorer.innerHTML = "";
+          files.forEach(file => {
+            if (file.type === "file" && file.name.endsWith(".json")) {
+              const li = document.createElement("li");
+              li.className = "file";
+              li.innerHTML = `
+                <span class="icon">📄</span>
+                <a href="${file.download_url}" download>${file.name}</a>
+              `;
+              explorer.appendChild(li);
+            } else if (file.type === "dir") {
+              const li = document.createElement("li");
+              li.className = "folder";
+              li.innerHTML = `<span class="icon">📁</span> ${file.name}`;
+              explorer.appendChild(li);
             }
-
-            fileList.appendChild(li);
           });
         })
         .catch(err => {
-          document.getElementById("file-list").innerText = "Failed to load files 😢";
+          explorer.innerHTML = "<li class='error'>Failed to load files.</li>";
           console.error(err);
         });
     }
 
-    // Initially load the Jsons folder contents
-    fetchFolderContents(folderPath);
+    loadFiles();
   </script>
 </body>
 </html>
