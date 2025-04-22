@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AC-JSONS - Jsons File Explorer</title>
+  <title>AC-JSONS - Jsons</title>
   <style>
     body { font-family: sans-serif; padding: 20px; background: #f9f9f9; }
     h1 { color: #333; }
@@ -15,14 +15,14 @@
   </style>
 </head>
 <body>
-  <h1>📁 Jsons Folder Explorer</h1>
+  <h1>📁 Jsons Folder</h1>
   <ul id="file-list">Loading folder contents...</ul>
 
   <script>
     const user = "star-destroyer11";
     const repo = "AC-JSONS";
     const branch = "main";
-    const folderPath = "Jsons";  // Folder path within the repo
+    const folderPath = "Jsons";  // Path to the Jsons folder in the repo
 
     // Fetch the contents of the folder (Jsons folder)
     function fetchFolderContents(path) {
@@ -37,7 +37,7 @@
             const li = document.createElement("li");
 
             if (item.type === "file") {
-              // For files, create a download link
+              // For files, create a download link using the raw content URL
               const a = document.createElement("a");
               a.href = item.download_url;
               a.textContent = item.name;
