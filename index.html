@@ -3,43 +3,78 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ac-JSON's</title>
+  <title>AC-Jsons</title>
+  <style>
+    body {
+      background-color: #0d1117;
+      color: #c9d1d9;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    h1 {
+      color: #58a6ff;
+      font-size: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    select, button {
+      background-color: #161b22;
+      color: #c9d1d9;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 0.6rem 1rem;
+      font-size: 1rem;
+      margin: 0.5rem;
+    }
+
+    select:hover, button:hover {
+      border-color: #58a6ff;
+    }
+
+    button {
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #238636;
+      border-color: #2ea043;
+    }
+  </style>
 </head>
 <body>
 
-  <h1>Ac-JSON's</h1>
-
+  <h1>AC-Jsons</h1>
 
   <select id="fileSelect">
-    <option value="">Select a file to download</option>
+    <option value="">Select a JSON file to download</option>
   </select>
-
 
   <button id="downloadFileBtn">Download Selected File</button>
 
   <script>
-    const githubRepoUrl = "https://api.github.com/repos/Star-destroyer11/AC-Jsons/contents/Jsons"; 
-
+    const githubRepoUrl = "https://api.github.com/repos/Star-destroyer11/AC-Jsons/contents/Jsons";
 
     function fetchAvailableFiles() {
       fetch(githubRepoUrl)
         .then(response => response.json())
         .then(data => {
           const fileSelect = document.getElementById("fileSelect");
-
           data.forEach(file => {
-            if (file.name.endsWith(".json")) { 
+            if (file.name.endsWith(".json") && file.download_url) {
               const option = document.createElement("option");
-              option.value = file.download_url; 
+              option.value = file.download_url;
               option.textContent = file.name;
               fileSelect.appendChild(option);
             }
           });
         })
-        .catch(err => console.error("Error fetching files from GitHub:", err));
+        .catch(err => console.error("Error fetching files:", err));
     }
 
-   
     function downloadSelectedFile() {
       const fileSelect = document.getElementById("fileSelect");
       const selectedUrl = fileSelect.value;
@@ -47,18 +82,17 @@
       if (selectedUrl) {
         const link = document.createElement("a");
         link.href = selectedUrl;
-        link.download = selectedUrl.split('/').pop(); 
+        link.download = selectedUrl.split('/').pop();
+        document.body.appendChild(link);
         link.click();
+        document.body.removeChild(link);
       } else {
         alert("Please select a file first.");
       }
     }
 
-   
     document.addEventListener("DOMContentLoaded", () => {
       fetchAvailableFiles();
-
-
       document.getElementById("downloadFileBtn").addEventListener("click", downloadSelectedFile);
     });
   </script>
