@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>AC-JSONS Explorer</title>
+  <title>AC-JSONS - Jsons Folder</title>
   <style>
     body { font-family: sans-serif; padding: 2rem; background: #f0f0f0; }
     h1 { color: #222; }
@@ -13,48 +13,30 @@
   </style>
 </head>
 <body>
-  <h1>📁 AC-JSONS Explorer</h1>
+  <h1>📁 Jsons Folder</h1>
   <ul id="file-list">Loading files...</ul>
 
   <script>
     const user = "star-destroyer11";
     const repo = "AC-JSONS";
     const branch = "main";
-    const path = window.location.pathname.split('/').pop();  // Get folder from URL path
+    const folderPath = "Jsons"; // Path to the Jsons folder in the repo
 
-    // Construct URL to list files or folders
-    const apiUrl = path 
-      ? `https://api.github.com/repos/${user}/${repo}/contents/${path}?ref=${branch}` // Folder
-      : `https://api.github.com/repos/${user}/${repo}/contents?ref=${branch}`; // Root
-
-    fetch(apiUrl)
+    // Fetch files from the "Jsons" folder in the repo
+    fetch(`https://api.github.com/repos/${user}/${repo}/contents/${folderPath}?ref=${branch}`)
       .then(res => res.json())
       .then(data => {
         const fileList = document.getElementById("file-list");
-        fileList.innerHTML = "";
+        fileList.innerHTML = ""; // Clear loading text
 
-        // Display the parent directory link (if inside a folder)
-        if (path) {
-          const parentLink = document.createElement("li");
-          parentLink.innerHTML = `<a href="../">.. Go up one level</a>`;
-          fileList.appendChild(parentLink);
-        }
-
-        // Loop through files/folders
+        // Loop through the files in the folder
         data.forEach(item => {
           if (item.type === "file") {
             const li = document.createElement("li");
             const a = document.createElement("a");
-            a.href = `https://github.com/${user}/${repo}/blob/${branch}/${item.path}`;
+            a.href = item.download_url;
             a.textContent = item.name;
-            li.appendChild(a);
-            fileList.appendChild(li);
-          } else if (item.type === "dir") {
-            // If it's a folder, link to it using GitHub's blob URL format
-            const li = document.createElement("li");
-            const a = document.createElement("a");
-            a.href = `https://github.com/${user}/${repo}/blob/${branch}/${item.path}/`;  // Folder link
-            a.textContent = `${item.name}/`; // Folder name
+            a.download = item.name; // Force file download on click
             li.appendChild(a);
             fileList.appendChild(li);
           }
