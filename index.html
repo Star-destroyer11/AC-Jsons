@@ -1,42 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>AC-JSONS Explorer</title>
+  <meta charset="UTF-8">
+  <title>AC-JSONS File Explorer</title>
   <style>
-    body { font-family: sans-serif; padding: 2rem; background: #f4f4f4; }
-    h1 { color: #333; }
-    ul { padding: 0; list-style: none; }
-    li { margin: 10px 0; }
-    a { text-decoration: none; color: #0077cc; }
-    a:hover { text-decoration: underline; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f2f5;
+      padding: 2rem;
+      color: #333;
+    }
+    h1 {
+      margin-bottom: 1rem;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      padding: 8px 12px;
+      background: white;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      transition: background 0.2s;
+    }
+    li:hover {
+      background: #f7f9fb;
+    }
+    a {
+      text-decoration: none;
+      color: #0077cc;
+      font-weight: 500;
+    }
+    .back {
+      margin-bottom: 20px;
+      display: inline-block;
+      color: #555;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
-  <h1>📁 AC-JSONS Files</h1>
-  <ul id="files">Loading...</ul>
+  <h1>📁 AC-JSONS File Explorer</h1>
+  <div id="path"></div>
+  <div class="back" id="back-btn" style="display:none;">🔙 Back</div>
+  <ul id="file-list">Loading...</ul>
 
   <script>
+    const username = "fgdgeertet";
     const repo = "AC-JSONS";
-    const user = "star-destroyer11";
     const branch = "main";
+    let currentPath = "";
 
-    fetch(`https://api.github.com/repos/${user}/${repo}/contents/?ref=${branch}`)
-      .then(res => res.json())
-      .then(files => {
-        const ul = document.getElementById("files");
-        ul.innerHTML = "";
+    const fileList = document.getElementById("file-list");
+    const backBtn = document.getElementById("back-btn");
+    const pathDisplay = document.getElementById("path");
 
-        files.forEach(file => {
-          const li = document.createElement("li");
-          const a = document.createElement("a");
-          a.href = file.download_url;
-          a.textContent = file.name;
-          a.target = "_blank";
-          li.appendChild(a);
-          ul.appendChild(li);
+    function fetchFiles(path = "") {
+      fileList.innerHTML = "Loading...";
+      pathDisplay.innerHTML = path ? `<strong>Path:</strong> /${path}` : "";
+
+      fetch(`https://api.github.com/repos/${username}/${repo}/contents/${path}?ref=${branch}`)
+        .then(res => res.json())
+        .then(data => {
+          fileList.innerHTML = "";
+
+          backBtn.style.display = path ? "inline-block" : "none";
+
+          data
+            .filter(item => {
+              if (path) return true; // inside folder: show everything
+              return item.name === "README.md" || item.name === "jsons"; // root only
+            })
+            .forEach(item => {
+              const li = document.createElement("li");
+              const a = document.createElement("a");
+
+              if (item.type === "dir") {
+                a.href = "#";
+                a.textContent = `📁 ${item.name}`;
+                a.onclick = () => {
+                  currentPath = `${path}/${item.name}`.replace(/^\/|\/$/g, '');
+                  fetchFiles(currentPath);
+                };
+              } else {
+                a.href = item.download_url;
+                a.textContent = `📄 ${item.name}`;
+                a.target = "_blank";
+              }
+
+              li.appendChild(a);
+              fileList.appendChild(li);
+            });
+        })
+        .catch(err => {
+          fileList.innerHTML = "Failed to load files.";
+          console.error(err);
         });
-      });
+    }
+
+    backBtn.onclick = () => {
+      if (!currentPath) return;
+      const segments = currentPath.split("/");
+      segments.pop();
+      currentPath = segments.join("/");
+      fetchFiles(currentPath);
+    };
+
+    fetchFiles();
   </script>
 </body>
 </html>
