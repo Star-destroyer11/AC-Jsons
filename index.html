@@ -26,10 +26,20 @@
 
     // Function to handle file download
     function downloadFile(fileUrl, filename) {
-      const a = document.createElement("a");
-      a.href = fileUrl;
-      a.download = filename;  // Forces download
-      a.click();  // Trigger the download
+      fetch(fileUrl)
+        .then(response => response.blob()) // Convert the file to Blob
+        .then(blob => {
+          const url = window.URL.createObjectURL(blob); // Create an Object URL for the Blob
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = filename;  // Set the filename to be downloaded
+          a.click();  // Trigger the download
+          window.URL.revokeObjectURL(url);  // Clean up the Object URL
+        })
+        .catch(err => {
+          alert("Failed to download the file. Please try again later.");
+          console.error(err);
+        });
     }
 
     // Fetch the contents of the folder (Jsons folder)
