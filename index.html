@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AC-JSONS - Jsons</title>
+  <title>AC-JSONS - Jsons File Explorer</title>
   <style>
     body { font-family: sans-serif; padding: 20px; background: #f9f9f9; }
     h1 { color: #333; }
@@ -15,7 +15,7 @@
   </style>
 </head>
 <body>
-  <h1>📁 Jsons Folder</h1>
+  <h1>📁 Jsons Folder Explorer</h1>
   <ul id="file-list">Loading folder contents...</ul>
 
   <script>
@@ -23,6 +23,14 @@
     const repo = "AC-JSONS";
     const branch = "main";
     const folderPath = "Jsons";  // Path to the Jsons folder in the repo
+
+    // Function to handle file download
+    function downloadFile(fileUrl, filename) {
+      const a = document.createElement("a");
+      a.href = fileUrl;
+      a.download = filename;  // Forces download
+      a.click();  // Trigger the download
+    }
 
     // Fetch the contents of the folder (Jsons folder)
     function fetchFolderContents(path) {
@@ -37,11 +45,15 @@
             const li = document.createElement("li");
 
             if (item.type === "file") {
-              // For files, create a download link using the raw content URL
+              // For files, create a download link
               const a = document.createElement("a");
-              a.href = item.download_url;
+              const rawFileUrl = `https://raw.githubusercontent.com/${user}/${repo}/${branch}/${item.path}`;
+              a.href = rawFileUrl;
               a.textContent = item.name;
-              a.download = item.name;  // Forces the file to be downloaded
+              a.onclick = function(event) {
+                event.preventDefault(); // Prevent the default navigation
+                downloadFile(rawFileUrl, item.name); // Trigger the download
+              };
               li.appendChild(a);
             } else if (item.type === "dir") {
               // For directories, create a link to browse the folder
