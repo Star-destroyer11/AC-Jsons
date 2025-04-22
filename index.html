@@ -1,25 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AC-Jsons</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AC-JSON</title>
+<link rel="stylesheet" href="style.css">
+
 </head>
 <body>
-  <div class="container">
-    <h1>📁 AC-Jsons</h1>
 
-    <label for="fileSelect">Choose a JSON file:</label>
-    <select id="fileSelect">
-      <option value="">-- Select a file --</option>
-    </select>
-    <button id="downloadFileBtn">⬇️ Download File</button>
-  </div>
+  <h1>JSON</h1>
+
+  <!-- Dropdown to select a file -->
+  <select id="fileSelect">
+    <option value="">Select a file to download</option>
+  </select>
+
+  <!-- Button to trigger download -->
+  <button id="downloadFileBtn">Download Selected File</button>
 
   <script>
-    const githubRepoUrl = "https://api.github.com/repos/Star-destroyer11/AC-Jsons/contents/Jsons";
+    const githubRepoUrl = "https://api.github.com/repos/Star-destroyer11/AC-Jsons/contents/Jsons"; // GitHub API URL for your JSONs folder
 
+    // Fetch available files from GitHub
     function fetchAvailableFiles() {
       fetch(githubRepoUrl)
         .then(response => response.json())
@@ -27,9 +30,9 @@
           const fileSelect = document.getElementById("fileSelect");
 
           data.forEach(file => {
-            if (file.name.endsWith(".json")) {
+            if (file.name.endsWith(".json")) { // Ensure only JSON files are added
               const option = document.createElement("option");
-              option.value = file.download_url;
+              option.value = file.download_url; // GitHub raw file download URL
               option.textContent = file.name;
               fileSelect.appendChild(option);
             }
@@ -38,6 +41,7 @@
         .catch(err => console.error("Error fetching files from GitHub:", err));
     }
 
+    // Triggered when the user selects a file to download
     function downloadSelectedFile() {
       const fileSelect = document.getElementById("fileSelect");
       const selectedUrl = fileSelect.value;
@@ -45,19 +49,21 @@
       if (selectedUrl) {
         const link = document.createElement("a");
         link.href = selectedUrl;
-        link.download = selectedUrl.split('/').pop();
-        document.body.appendChild(link);
+        link.download = selectedUrl.split('/').pop(); // Use the file name from the URL
         link.click();
-        document.body.removeChild(link);
       } else {
         alert("Please select a file first.");
       }
     }
 
+    // Load the available files when the page is ready
     document.addEventListener("DOMContentLoaded", () => {
       fetchAvailableFiles();
+
+      // Bind the download button
       document.getElementById("downloadFileBtn").addEventListener("click", downloadSelectedFile);
     });
   </script>
+
 </body>
 </html>
