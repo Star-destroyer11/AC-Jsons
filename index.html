@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -53,7 +54,7 @@
     <option value="">Select a JSON file to download</option>
   </select>
 
-  <button id="downloadFileBtn">Download Selected File</button>
+  <button id="downloadFileBtnNew">Download Selected File</button>
 
   <script>
     const githubRepoUrl = "https://api.github.com/repos/Star-destroyer11/AC-Jsons/contents/Jsons";
@@ -93,7 +94,7 @@
 
     document.addEventListener("DOMContentLoaded", () => {
       fetchAvailableFiles();
-      document.getElementById("downloadFileBtn").addEventListener("click", downloadSelectedFile);
+      document.getElementById("downloadFileBtnNew").addEventListener("click", downloadSelectedFile);
     });
   </script>
 
