@@ -9,18 +9,18 @@
 
   <h1>Download JSON Files from GitHub Repository</h1>
 
-  <!-- Dropdown to select a file -->
+
   <select id="fileSelect">
     <option value="">Select a file to download</option>
   </select>
 
-  <!-- Button to trigger download -->
+
   <button id="downloadFileBtn">Download Selected File</button>
 
   <script>
-    const githubRepoUrl = "https://api.github.com/repos/Star-destroyer11/AC-Jsons/contents/Jsons"; // GitHub API URL for your JSONs folder
+    const githubRepoUrl = "https://api.github.com/repos/Star-destroyer11/AC-Jsons/contents/Jsons"; 
 
-    // Fetch available files from GitHub
+
     function fetchAvailableFiles() {
       fetch(githubRepoUrl)
         .then(response => response.json())
@@ -28,9 +28,9 @@
           const fileSelect = document.getElementById("fileSelect");
 
           data.forEach(file => {
-            if (file.name.endsWith(".json")) { // Ensure only JSON files are added
+            if (file.name.endsWith(".json")) { 
               const option = document.createElement("option");
-              option.value = file.download_url; // GitHub raw file download URL
+              option.value = file.download_url; 
               option.textContent = file.name;
               fileSelect.appendChild(option);
             }
@@ -39,7 +39,7 @@
         .catch(err => console.error("Error fetching files from GitHub:", err));
     }
 
-    // Triggered when the user selects a file to download
+   
     function downloadSelectedFile() {
       const fileSelect = document.getElementById("fileSelect");
       const selectedUrl = fileSelect.value;
@@ -47,18 +47,18 @@
       if (selectedUrl) {
         const link = document.createElement("a");
         link.href = selectedUrl;
-        link.download = selectedUrl.split('/').pop(); // Use the file name from the URL
+        link.download = selectedUrl.split('/').pop(); 
         link.click();
       } else {
         alert("Please select a file first.");
       }
     }
 
-    // Load the available files when the page is ready
+   
     document.addEventListener("DOMContentLoaded", () => {
       fetchAvailableFiles();
 
-      // Bind the download button
+
       document.getElementById("downloadFileBtn").addEventListener("click", downloadSelectedFile);
     });
   </script>
