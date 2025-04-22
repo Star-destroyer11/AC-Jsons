@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AC-JSONS Explorer</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; background: #f4f4f4; }
+    h1 { color: #333; }
+    ul { padding: 0; list-style: none; }
+    li { margin: 10px 0; }
+    a { text-decoration: none; color: #0077cc; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <h1>📁 AC-JSONS Files</h1>
+  <ul id="files">Loading...</ul>
+
+  <script>
+    const repo = "AC-JSONS";
+    const user = "star-destroyer11";
+    const branch = "main";
+
+    fetch(`https://api.github.com/repos/${user}/${repo}/contents/?ref=${branch}`)
+      .then(res => res.json())
+      .then(files => {
+        const ul = document.getElementById("files");
+        ul.innerHTML = "";
+
+        files.forEach(file => {
+          const li = document.createElement("li");
+          const a = document.createElement("a");
+          a.href = file.download_url;
+          a.textContent = file.name;
+          a.target = "_blank";
+          li.appendChild(a);
+          ul.appendChild(li);
+        });
+      });
+  </script>
+</body>
+</html>
