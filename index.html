@@ -9,41 +9,55 @@
 <body>
   <div class="container">
     <h1>📁 AC-Jsons</h1>
-    <ul id="file-explorer">Loading files...</ul>
+
+    <label for="fileSelect">Choose a JSON file:</label>
+    <select id="fileSelect">
+      <option value="">-- Select a file --</option>
+    </select>
+    <button id="downloadFileBtn">⬇️ Download File</button>
   </div>
 
   <script>
-    const explorer = document.getElementById("file-explorer");
+    const githubRepoUrl = "https://api.github.com/repos/Star-destroyer11/AC-Jsons/contents/Jsons";
 
-    function loadFiles() {
-      fetch("https://api.github.com/repos/star-destroyer11/AC-JSONS/contents/Jsons")
-        .then(res => res.json())
-        .then(files => {
-          explorer.innerHTML = "";
-          files.forEach(file => {
-            if (file.type === "file" && file.name.endsWith(".json")) {
-              const li = document.createElement("li");
-              li.className = "file";
-              li.innerHTML = `
-                <span class="icon">📄</span>
-                <a href="${file.download_url}" download>${file.name}</a>
-              `;
-              explorer.appendChild(li);
-            } else if (file.type === "dir") {
-              const li = document.createElement("li");
-              li.className = "folder";
-              li.innerHTML = `<span class="icon">📁</span> ${file.name}`;
-              explorer.appendChild(li);
+    function fetchAvailableFiles() {
+      fetch(githubRepoUrl)
+        .then(response => response.json())
+        .then(data => {
+          const fileSelect = document.getElementById("fileSelect");
+
+          data.forEach(file => {
+            if (file.name.endsWith(".json")) {
+              const option = document.createElement("option");
+              option.value = file.download_url;
+              option.textContent = file.name;
+              fileSelect.appendChild(option);
             }
           });
         })
-        .catch(err => {
-          explorer.innerHTML = "<li class='error'>Failed to load files.</li>";
-          console.error(err);
-        });
+        .catch(err => console.error("Error fetching files from GitHub:", err));
     }
 
-    loadFiles();
+    function downloadSelectedFile() {
+      const fileSelect = document.getElementById("fileSelect");
+      const selectedUrl = fileSelect.value;
+
+      if (selectedUrl) {
+        const link = document.createElement("a");
+        link.href = selectedUrl;
+        link.download = selectedUrl.split('/').pop();
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else {
+        alert("Please select a file first.");
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      fetchAvailableFiles();
+      document.getElementById("downloadFileBtn").addEventListener("click", downloadSelectedFile);
+    });
   </script>
 </body>
 </html>
